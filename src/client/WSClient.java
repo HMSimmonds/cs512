@@ -1,22 +1,24 @@
 package client;
 
+import server.MiddlewareImplService;
+
 import java.net.URL;
 import java.net.MalformedURLException;
 
 
 public class WSClient {
 
-    ResourceManagerImplService service;
+    MiddlewareImplService service;
     
     ResourceManager proxy;
-    
-    public WSClient(String serviceName, String serviceHost, int servicePort) 
+
+    public WSClient(String serviceName, String serviceHost, int servicePort)
     throws MalformedURLException {
     
         URL wsdlLocation = new URL("http", serviceHost, servicePort, 
                 "/" + serviceName + "/service?wsdl");
                 
-        service = new ResourceManagerImplService(wsdlLocation);
+        service = new MiddlewareImplService(wsdlLocation);
         
         proxy = service.getResourceManagerImplPort();
     }

@@ -29,13 +29,14 @@ public class ResourceManagerImpl implements server.ws.ResourceManager {
         }
     }
 
+    //returns false if no previous mapping for key
     @Override
     public boolean removeItem(int id) {
 
-        return reservableItems.remove(id) == null;
+        return reservableItems.remove(id) != null;
     }
 
-    //returns true if item already existed
+    //returns true if item successfully added
     @Override
     public boolean addItem(int id, ReservableItem reservableItem) {
         ReservableItem returnValue;

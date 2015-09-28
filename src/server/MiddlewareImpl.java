@@ -5,7 +5,6 @@
 
 package server;
 
-import server.ws.Middleware;
 import server.ws.ResourceManager;
 
 import java.util.*;
@@ -23,7 +22,7 @@ public class MiddlewareImpl implements server.ws.Middleware {
     public final static String ROOM_TYPE = "Room";
 
     //assigns list of active resourceManagers to middleware
-    public MiddlewareImpl(HashMap<String, ResourceManager> resourceManagerHash) {
+    public MiddlewareImpl() {
         //automatically assigns three RM's to ResourceManagerMap
         resourceManagerHash.put(FLIGHT_TYPE, new ResourceManagerImpl());
         resourceManagerHash.put(CAR_TYPE, new ResourceManagerImpl());

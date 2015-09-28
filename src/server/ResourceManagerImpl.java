@@ -9,7 +9,9 @@ import java.util.Map;
 /*
  * Created by hmsimmonds on 15-09-27.
  */
-public class ResourceManagerImpl implements ResourceManager {
+
+//@WebService(endpointInterface = "server.ws.ResourceManager")
+public class ResourceManagerImpl implements server.ws.ResourceManager {
 
 
     private HashMap<Integer, ReservableItem> reservableItems;

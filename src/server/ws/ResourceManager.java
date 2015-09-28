@@ -24,18 +24,18 @@ import javax.jws.WebService;
 import javax.jws.WebMethod;
 
 
-@WebService
+//@WebService
 public interface ResourceManager {
 
    //Generic implementation for RM's
 
-    @WebMethod
+//    @WebMethod
     ReservableItem getItem(int id);
 
-    @WebMethod
+//    @WebMethod
     boolean removeItem(int id);
 
-    @WebMethod
+//    @WebMethod
     boolean addItem(int id, ReservableItem reservableItem);
 
 }

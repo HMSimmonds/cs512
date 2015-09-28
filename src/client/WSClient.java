@@ -1,8 +1,5 @@
 package client;
 
-import server.MiddlewareImplService;
-import server.ws.Middleware;
-
 import java.net.URL;
 import java.net.MalformedURLException;
 

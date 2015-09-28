@@ -27,15 +27,7 @@ import javax.jws.WebMethod;
 @WebService
 public interface ResourceManager {
 
-    // Flight operations //
-
-    /* Add seats to a flight.  
-     * In general, this will be used to create a new flight, but it should be 
-     * possible to add seats to an existing flight.  Adding to an existing 
-     * flight should overwrite the current price of the available seats.
-     *
-     * @return success.
-     */
+   //Generic implementation for RM's
 
     @WebMethod
     ReservableItem getItem(int id);

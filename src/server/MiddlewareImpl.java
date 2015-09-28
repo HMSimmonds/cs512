@@ -6,17 +6,30 @@
 package server;
 
 import server.ws.Middleware;
+import server.ws.ResourceManager;
 
 import java.util.*;
 import javax.jws.WebService;
 
 
 @WebService(endpointInterface = "server.ws.Middleware")
-public class MiddlewareImpl implements Middleware {
-    
+public class MiddlewareImpl implements server.ws.Middleware {
+
     protected RMHashtable m_itemHT = new RMHashtable();
-    
-    
+    protected HashMap<String, ResourceManager> resourceManagerHash = new HashMap<String, ResourceManager>();
+
+    public final static String FLIGHT_TYPE = "Flight";
+    public final static String CAR_TYPE = "Car";
+    public final static String ROOM_TYPE = "Room";
+
+    //assigns list of active resourceManagers to middleware
+    public MiddlewareImpl(HashMap<String, ResourceManager> resourceManagerHash) {
+        //automatically assigns three RM's to ResourceManagerMap
+        resourceManagerHash.put(FLIGHT_TYPE, new ResourceManagerImpl());
+        resourceManagerHash.put(CAR_TYPE, new ResourceManagerImpl());
+        resourceManagerHash.put(ROOM_TYPE, new ResourceManagerImpl());
+    }
+
     // Basic operations on RMItem //
     
     // Read a data item.
@@ -139,25 +152,15 @@ public class MiddlewareImpl implements Middleware {
                              int numSeats, int flightPrice) {
         Trace.info("RM::addFlight(" + id + ", " + flightNumber 
                 + ", $" + flightPrice + ", " + numSeats + ") called.");
-        Flight curObj = (Flight) readData(id, Flight.getKey(flightNumber));
-        if (curObj == null) {
-            // Doesn't exist; add it.
-            Flight newObj = new Flight(flightNumber, numSeats, flightPrice);
-            writeData(id, newObj.getKey(), newObj);
-            Trace.info("RM::addFlight(" + id + ", " + flightNumber 
-                    + ", $" + flightPrice + ", " + numSeats + ") OK.");
-        } else {
-            // Add seats to existing flight and update the price.
-            curObj.setCount(curObj.getCount() + numSeats);
-            if (flightPrice > 0) {
-                curObj.setPrice(flightPrice);
-            }
-            writeData(id, curObj.getKey(), curObj);
-            Trace.info("RM::addFlight(" + id + ", " + flightNumber 
-                    + ", $" + flightPrice + ", " + numSeats + ") OK: "
-                    + "seats = " + curObj.getCount() + ", price = $" + flightPrice);
+
+        //Find appropriate Flight RM and then send the operation
+        if (resourceManagerHash.get(FLIGHT_TYPE).addItem(id, new Flight(flightNumber, numSeats, flightPrice))) {
+            Trace.info("RM::addFlight(" + id + ", " + flightNumber
+                    + ", $" + flightPrice + ", " + numSeats + ") OKAY.");
+            return true;
         }
-        return(true);
+
+        return(false);
     }
 
     @Override
@@ -168,12 +171,19 @@ public class MiddlewareImpl implements Middleware {
     // Returns the number of empty seats on this flight.
     @Override
     public int queryFlight(int id, int flightNumber) {
-        return queryNum(id, Flight.getKey(flightNumber));
+        ReservableItem flight = resourceManagerHash.get(FLIGHT_TYPE).getItem(id);
+
+        return flight.getCount() - flight.getReserved();
     }
 
     // Returns price of this flight.
     public int queryFlightPrice(int id, int flightNumber) {
-        return queryPrice(id, Flight.getKey(flightNumber));
+        return queryItemPrice(id, FLIGHT_TYPE);
+    }
+
+    //Generic method for item price
+    public int queryItemPrice(int id, String type) {
+        return resourceManagerHash.get(type).getItem(id).getPrice();
     }
 
     /*

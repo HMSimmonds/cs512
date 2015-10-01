@@ -8,6 +8,7 @@ package server;
 import server.ws.ResourceManager;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.jws.WebService;
 
 
@@ -17,7 +18,8 @@ public class MiddlewareImpl implements server.ws.Middleware {
     //TODO: Remove HashTable
     //TODO: Synchronize operations (addFlight .. etc)
 
-    protected RMHashtable m_itemHT = new RMHashtable();
+//    protected RMHashtable m_itemHT = new RMHashtable();
+    protected ConcurrentHashMap<Integer, Customer> customers = new ConcurrentHashMap<Integer, Customer>();
     protected HashMap<String, ResourceManager> resourceManagerHash = new HashMap<String, ResourceManager>();
 
     public final static String FLIGHT_TYPE = "Flight";
@@ -350,62 +352,58 @@ public class MiddlewareImpl implements server.ws.Middleware {
         int customerId = Integer.parseInt(String.valueOf(id) +
                 String.valueOf(Calendar.getInstance().get(Calendar.MILLISECOND)) +
                 String.valueOf(Math.round(Math.random() * 100 + 1)));
-        Customer cust = new Customer(customerId);
-        writeData(id, cust.getKey(), cust);
+        customers.put(id, new Customer(customerId));
         Trace.info("RM::newCustomer(" + id + ") OK: " + customerId);
         return customerId;
     }
 
     // This method makes testing easier.
-//    @Override
-//    public boolean newCustomerId(int id, int customerId) {
-//        Trace.info("INFO: RM::newCustomer(" + id + ", " + customerId + ") called.");
-//        Customer cust = (Customer) readData(id, Customer.getKey(customerId));
-//        if (cust == null) {
-//            cust = new Customer(customerId);
-//            writeData(id, cust.getKey(), cust);
-//            Trace.info("INFO: RM::newCustomer(" + id + ", " + customerId + ") OK.");
-//            return true;
-//        } else {
-//            Trace.info("INFO: RM::newCustomer(" + id + ", " +
-//                    customerId + ") failed: customer already exists.");
-//            return false;
-//        }
-//    }
+    @Override
+    public boolean newCustomerId(int id, int customerId) {
+        Trace.info("INFO: RM::newCustomer(" + id + ", " + customerId + ") called.");
+        if (customers.get(id) == null) {
+            customers.put(id, new Customer(customerId);
+            Trace.info("INFO: RM::newCustomer(" + id + ", " + customerId + ") OK.");
+            return true;
+        } else {
+            Trace.info("INFO: RM::newCustomer(" + id + ", " +
+                    customerId + ") failed: customer already exists.");
+            return false;
+        }
+    }
 
     // Delete customer from the database. 
-//    @Override
-//    public boolean deleteCustomer(int id, int customerId) {
-//        Trace.info("RM::deleteCustomer(" + id + ", " + customerId + ") called.");
-//        Customer cust = (Customer) readData(id, Customer.getKey(customerId));
-//        if (cust == null) {
-//            Trace.warn("RM::deleteCustomer(" + id + ", "
-//                    + customerId + ") failed: customer doesn't exist.");
-//            return false;
-//        } else {
-//            // Increase the reserved numbers of all reservable items that
-//            // the customer reserved.
-//            RMHashtable reservationHT = cust.getReservations();
-//            for (Enumeration e = reservationHT.keys(); e.hasMoreElements();) {
-//                String reservedKey = (String) (e.nextElement());
-//                ReservedItem reservedItem = cust.getReservedItem(reservedKey);
-//                Trace.info("RM::deleteCustomer(" + id + ", " + customerId + "): "
-//                        + "deleting " + reservedItem.getCount() + " reservations "
-//                        + "for item " + reservedItem.getKey());
-//                ReservableItem item =
-//                        (ReservableItem) readData(id, reservedItem.getKey());
-//                item.setReserved(item.getReserved() - reservedItem.getCount());
-//                item.setCount(item.getCount() + reservedItem.getCount());
-//                Trace.info("RM::deleteCustomer(" + id + ", " + customerId + "): "
-//                        + reservedItem.getKey() + " reserved/available = "
-//                        + item.getReserved() + "/" + item.getCount());
-//            }
-//            // Remove the customer from the storage.
-//            removeData(id, cust.getKey());
-//            Trace.info("RM::deleteCustomer(" + id + ", " + customerId + ") OK.");
-//            return true;
-//        }
-//    }
+    @Override
+    public boolean deleteCustomer(int id, int customerId) {
+        Trace.info("RM::deleteCustomer(" + id + ", " + customerId + ") called.");
+        if (customers.get(id) == null) {
+            Trace.warn("RM::deleteCustomer(" + id + ", "
+                    + customerId + ") failed: customer doesn't exist.");
+            return false;
+        } else {
+            // Increase the reserved numbers of all reservable items that
+            // the customer reserved.
+            RMHashtable reservationHT = cust.getReservations();
+            for (Enumeration e = reservationHT.keys(); e.hasMoreElements();) {
+                String reservedKey = (String) (e.nextElement());
+                ReservedItem reservedItem = cust.getReservedItem(reservedKey);
+                Trace.info("RM::deleteCustomer(" + id + ", " + customerId + "): "
+                        + "deleting " + reservedItem.getCount() + " reservations "
+                        + "for item " + reservedItem.getKey());
+                ReservableItem item =
+                        (ReservableItem) readData(id, reservedItem.getKey());
+                item.setReserved(item.getReserved() - reservedItem.getCount());
+                item.setCount(item.getCount() + reservedItem.getCount());
+                Trace.info("RM::deleteCustomer(" + id + ", " + customerId + "): "
+                        + reservedItem.getKey() + " reserved/available = "
+                        + item.getReserved() + "/" + item.getCount());
+            }
+            // Remove the customer from the storage.
+            removeData(id, cust.getKey());
+            Trace.info("RM::deleteCustomer(" + id + ", " + customerId + ") OK.");
+            return true;
+        }
+    }
 
     // Return data structure containing customer reservation info. 
     // Returns null if the customer doesn't exist. 
@@ -424,22 +422,22 @@ public class MiddlewareImpl implements server.ws.Middleware {
 //    }
 
     // Return a bill.
-//    @Override
-//    public String queryCustomerInfo(int id, int customerId) {
-//        Trace.info("RM::queryCustomerInfo(" + id + ", " + customerId + ") called.");
-//        Customer cust = (Customer) readData(id, Customer.getKey(customerId));
-//        if (cust == null) {
-//            Trace.warn("RM::queryCustomerInfo(" + id + ", "
-//                    + customerId + ") failed: customer doesn't exist.");
-//            // Returning an empty bill means that the customer doesn't exist.
-//            return "";
-//        } else {
-//            String s = cust.printBill();
-//            Trace.info("RM::queryCustomerInfo(" + id + ", " + customerId + "): \n");
-//            System.out.println(s);
-//            return s;
-//        }
-//    }
+    @Override
+    public String queryCustomerInfo(int id, int customerId) {
+        Trace.info("RM::queryCustomerInfo(" + id + ", " + customerId + ") called.");
+        Customer cust = customers.get(id);
+        if (cust == null) {
+            Trace.warn("RM::queryCustomerInfo(" + id + ", "
+                    + customerId + ") failed: customer doesn't exist.");
+            // Returning an empty bill means that the customer doesn't exist.
+            return "";
+        } else {
+            String s = cust.printBill();
+            Trace.info("RM::queryCustomerInfo(" + id + ", " + customerId + "): \n");
+            System.out.println(s);
+            return s;
+        }
+    }
 
     // Add flight reservation to this customer.  
 //    @Override

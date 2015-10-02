@@ -3,7 +3,6 @@ package middleware;
 import client.TCPPacket;
 
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -57,12 +56,12 @@ public class MiddlewareImpl {
     }
 
 
-    public boolean initializeMiddleware() {
+    public void initializeMiddleware() {
         try {
             while (true) {
                 //wait to accept message
                 System.out.println("Starting up middleware server");
-                Socket socket = middlewareSocket.accept();
+                final Socket socket = middlewareSocket.accept();
 
                 new Thread(new Runnable() {
                     @Override
@@ -90,10 +89,16 @@ public class MiddlewareImpl {
                                 TCPPacket request = (TCPPacket) inputStream.readObject();
                                 //Now process request
                                 TCPPacket processedRequest = processRequest(request);
+                                //write back to client
+                                outputStream.writeObject(processedRequest);
                             }
+                        } catch (IOException ex) {
+                            System.out.println(ex);
+                        } catch (Exception ex) {
+                            System.out.println(ex);
                         }
                     }
-                });
+                }).run();
             }
         } catch (IOException ex) {
             System.out.println(ex);
@@ -102,6 +107,29 @@ public class MiddlewareImpl {
 
     //will process request and return appropriate value
     private TCPPacket processRequest(TCPPacket packet) {
+        System.out.println("Forwarding request of Type : " + packet.type + " with ItemType: "
+                            + packet.itemType + " with ActionType: " + packet.actionType);
 
+        //HELLO - connection trying to be established or redundant command
+        if (packet.type == 0) return packet;
+
+        //NOT HELLO -> process
+        TCPPacket returnPacket = null;
+        try {
+            //write object to output stream (server)
+            outputStreams[packet.itemType].writeObject(packet);
+            System.out.println("Waiting for response from resource manager");
+            //read object from server and then return
+            returnPacket = (TCPPacket) inputStreams[packet.itemType].readObject();
+            System.out.println("Received response back from resource manager");
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        } finally {
+            return returnPacket;
+        }
     }
 }

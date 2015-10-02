@@ -154,6 +154,15 @@ public class TCPClient {
 
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
+
+            if (response.isValid) {
+                System.out.println("QueryFlight : id " + id + ": flight number : " + flightNumber +
+                        " RETURNED VALID");
+            } else {
+                System.out.println("QueryFlight : id " + id + ": flight number : " + flightNumber +
+                        " RETURNED INVALID");
+            }
+
             returnValue = response.totalCount - response.count;
 
             System.out.println("QueryFlight for id: " + id + " Flight Number: " + flightNumber
@@ -185,6 +194,15 @@ public class TCPClient {
 
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
+
+            if (response.isValid) {
+                System.out.println("QueryFlightPrice : id " + id + ": flight number : " + flightNumber +
+                        " RETURNED VALID");
+            } else {
+                System.out.println("QueryFlightPrice : id " + id + ": flight number : " + flightNumber +
+                        " RETURNED INVALID");
+            }
+
             returnPrice = response.itemPrice;
 
             System.out.println("QueryFlightPrice for id: " + id + " Flight Number: " + flightNumber
@@ -260,6 +278,13 @@ public class TCPClient {
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
             returnValue = response.isValid;
+
+            if (returnValue) {
+                System.out.println("DeleteCars : id " + id + ": location : " + location + "RETURNED VALID");
+            } else {
+                System.out.println("DeleteCars : id " + id + ": location " + location + "RETURNED INVALID");
+            }
+
         } catch (IOException ex) {
             System.out.println(ex);
         } catch (ClassNotFoundException ex) {
@@ -286,6 +311,12 @@ public class TCPClient {
 
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
+            if (response.isValid) {
+                System.out.println("QueryCars : id " + id + ": location : " + location + "RETURNED VALID");
+            } else {
+                System.out.println("QueryCars : id " + id + ": location " + location + "RETURNED INVALID");
+            }
+
             returnValue = response.totalCount - response.count;
 
             System.out.println("QueryCars for id: " + id + " location: " + location
@@ -317,6 +348,13 @@ public class TCPClient {
 
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
+
+            if (response.isValid) {
+                System.out.println("QueryCarsPrice : id " + id + ": location : " + location + "RETURNED VALID");
+            } else {
+                System.out.println("QueryCarsPrice : id " + id + ": location " + location + "RETURNED INVALID");
+            }
+
             returnPrice = response.itemPrice;
 
             System.out.println("QueryCarsPrice for id: " + id + " Location: " + location
@@ -393,6 +431,13 @@ public class TCPClient {
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
             returnValue = response.isValid;
+
+            if (returnValue) {
+                System.out.println("DeleteRooms : id " + id + ": location : " + location + " RETURNED VALID");
+            } else {
+                System.out.println("DeleteRooms : id " + id + ": location " + location + "RETURNED INVALID");
+            }
+
         } catch (IOException ex) {
             System.out.println(ex);
         } catch (ClassNotFoundException ex) {
@@ -419,6 +464,12 @@ public class TCPClient {
 
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
+            if (response.isValid) {
+                System.out.println("QueryRooms : id " + id + ": location : " + location + " RETURNED VALID");
+            } else {
+                System.out.println("QueryRooms : id " + id + ": location " + location + "RETURNED INVALID");
+            }
+
             returnValue = response.totalCount - response.count;
 
             System.out.println("QueryRooms for id: " + id + " location: " + location
@@ -450,6 +501,12 @@ public class TCPClient {
 
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
+            if (response.isValid) {
+                System.out.println("QueryRoomsPrice : id " + id + ": location : " + location + " RETURNED VALID");
+            } else {
+                System.out.println("QueryRoomsPrice : id " + id + ": location " + location + " RETURNED INVALID");
+            }
+
             returnPrice = response.itemPrice;
 
             System.out.println("QueryRoomsPrice for id: " + id + " Location: " + location

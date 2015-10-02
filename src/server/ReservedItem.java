@@ -52,7 +52,7 @@ public class ReservedItem extends RMItem {
     public String toString() { 
         return "hashkey = " + getKey() + ", " 
                 + "reservableItemKey = " + getReservableItemKey() + ", "
-                + "count = " + getCount() + ", price = " + getPrice(); 
+                + "totalCount = " + getCount() + ", price = " + getPrice();
     }
 
     // Note: hashKey is the same as the ReservableItem hashkey.  This would 

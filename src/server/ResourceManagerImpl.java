@@ -228,7 +228,7 @@ public class ResourceManagerImpl implements server.ws.ResourceManager {
             Trace.info("RM::addCars(" + id + ", " + location + ", " 
                     + numCars + ", $" + carPrice + ") OK.");
         } else {
-            // Add count to existing object and update price.
+            // Add totalCount to existing object and update price.
             curObj.setCount(curObj.getCount() + numCars);
             if (carPrice > 0) {
                 curObj.setPrice(carPrice);
@@ -277,7 +277,7 @@ public class ResourceManagerImpl implements server.ws.ResourceManager {
             Trace.info("RM::addRooms(" + id + ", " + location + ", " 
                     + numRooms + ", $" + roomPrice + ") OK.");
         } else {
-            // Add count to existing object and update price.
+            // Add totalCount to existing object and update price.
             curObj.setCount(curObj.getCount() + numRooms);
             if (roomPrice > 0) {
                 curObj.setPrice(roomPrice);

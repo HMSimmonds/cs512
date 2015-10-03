@@ -8,7 +8,7 @@ import server.ReservableItem;
 /**
  * Created by hmsimmonds on 15-10-02.
  */
-public class TCPPacket {
+public class TCPPacket implements Serializable {
 
     public static TCPPacket makeBlankPacket() {
         TCPPacket returnPacket = new TCPPacket();

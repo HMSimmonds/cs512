@@ -40,18 +40,19 @@ public class TCPClient {
                 if (inputPacket.type == 0) {
 
                     //this is the first receipt for connection
-                    if (numOfReceipts == 0) {
+                    if (numOfReceipts < 1) {
                         //Respond to connection with "HELLO" Message
                         TCPPacket responsePacket = new TCPPacket();
                         //assign it to a receipt Type
                         responsePacket.type = 0;
+                        outputStream.writeObject(responsePacket);
                         ++numOfReceipts;
+                    } else {
+                        System.out.println("Connection created with Middleware");
+                        //no longer waiting for connection;
+                        break;
                     }
                     //the response is a message Response
-                } else {
-                    System.out.println("Connection created with Middleware");
-                    //no longer waiting for connection;
-                    break;
                 }
             }
 

@@ -126,7 +126,7 @@ public class MiddlewareImpl {
                 //If the response is a connection "HELLO"
                 if (response.type == HELLO) {
                     outputStream.writeObject(response);
-                    System.out.println("Connected created with Middleware");
+                    System.out.println("Connection created with Middleware");
                 }
 
 

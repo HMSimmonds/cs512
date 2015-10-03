@@ -2,6 +2,10 @@ target/
 
 *.iml
 *.class
-*.idea/
 *.metadata/
-*.jar
+
+build/
+webapps/
+
+.DS_Store
+.idead/*

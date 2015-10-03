@@ -111,35 +111,93 @@ public class MiddlewareImpl {
         //If has a car - reserve at location
         if (packet.car) {
             TCPPacket carRequest = new TCPPacket();
-//            try {
-//                carRequest.id = packet.id;
-//                carRequest.type = 1;
-//                carRequest.actionType = 3;
-//                carRequest.itemType = 0;
-//                carRequest.itemKey = packet.itemKey;
-//                carRequest.customerId = packet.customerId;
-//                carRequest.totalCount = packet.totalCount;
-//
-//                outputStreams[CAR_INDEX].writeObject(carRequest);
-//
-//                //wait for response
-//
-//
-//            }
+            try {
+                carRequest.id = packet.id;
+                carRequest.type = 1;
+                carRequest.actionType = 3;
+                carRequest.itemType = 0;
+                carRequest.itemKey = packet.itemKey;
+                carRequest.customerId = packet.customerId;
+                carRequest.totalCount = packet.totalCount;
 
-            System.out.println("Reserved car for Itinerary");
+                //Send Car request
+                outputStreams[CAR_INDEX].writeObject(carRequest);
+
+                //wait for response
+                TCPPacket carResponse = (TCPPacket) inputStreams[CAR_INDEX].readObject();
+            } catch (IOException ex) {
+                System.out.println(ex);
+            } catch (ClassNotFoundException ex) {
+                System.out.println(ex);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            } finally {
+                System.out.println("Reserved car for Itinerary");
+            }
         }
 
         if (packet.room) {
-            System.out.println("Reserved room for Itinerary");
+            TCPPacket roomRequest = new TCPPacket();
+            try {
+                roomRequest.id = packet.id;
+                roomRequest.itemKey = packet.itemKey;
+                roomRequest.type = 1;
+                roomRequest.actionType = 3;
+                roomRequest.totalCount = 1;
+                roomRequest.customerId = packet.customerId;
+                roomRequest.itemType = 2;
+
+                //Send room request
+                outputStreams[ROOM_INDEX].writeObject(roomRequest);
+
+                //Wait for response
+                TCPPacket roomResponse = (TCPPacket) inputStreams[ROOM_INDEX].readObject();
+            } catch (IOException ex) {
+                System.out.println(ex);
+            } catch (ClassNotFoundException ex) {
+                System.out.println(ex);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            } finally {
+                System.out.println("Reserved room for Itinerary");
+            }
         }
 
+        //try to book all flights
         if (packet.flights != null) {
-            System.out.println("Reserved flights for Itinerary");
+            Iterator it = packet.flights.iterator();
+            while (it.hasNext()) {
+                TCPPacket flightRequest = new TCPPacket();
+                try {
+                    flightRequest.id = packet.id;
+                    flightRequest.type = 1;
+                    flightRequest.itemKey = (String)it.next();
+                    flightRequest.itemType = 1;
+                    flightRequest.actionType = 3;
+                    flightRequest.customerId = packet.customerId;
+
+                    //send flights request
+                    outputStreams[FLIGHT_INDEX].writeObject(flightRequest);
+
+                    //wait for response
+                    TCPPacket flightsResponse = (TCPPacket) inputStreams[FLIGHT_INDEX].readObject();
+                    isValidResponse = flightsResponse.isValid;
+                } catch (IOException ex) {
+                    System.out.println(ex);
+                } catch (ClassNotFoundException ex) {
+                    System.out.println(ex);
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                } finally {
+                    if (isValidResponse) {
+                        System.out.println("Reserved flights for Itinerary");
+                    }
+                }
+            }
         }
 
         response.isValid = isValidResponse;
-        System.out.println("Reserved Iteinerary");
+        System.out.println("Reserved Itinerary returned " + isValidResponse);
         return response;
     }
 

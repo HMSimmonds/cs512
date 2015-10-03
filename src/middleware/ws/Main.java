@@ -1,8 +1,7 @@
 package middleware.ws;
 
-import middleware.MiddleWareImpl;
+import middleware.MiddlewareImpl;
 import org.apache.catalina.startup.Tomcat;
-
 import java.io.File;
 
 public class Main {
@@ -15,18 +14,18 @@ public class Main {
             System.exit(-1);
         }
 
-        int port = Integer.parseInt(args[0]);
-        String address1 = args[1];
-        int port1 = Integer.parseInt(args[2]);
+        int portNum = Integer.parseInt(args[0]);
+        String ads1 = args[1];
+        int p1 = Integer.parseInt(args[2]);
 
-        String address2 = args[3];
-        int port2 = Integer.parseInt(args[4]);
+        String ads2 = args[3];
+        int p2 = Integer.parseInt(args[4]);
 
-        String address3 = args[5];
-        int port3 = Integer.parseInt(args[6]);
+        String ads3 = args[5];
+        int p3 = Integer.parseInt(args[6]);
 
-        MiddleWareImpl mw = new MiddleWareImpl(port, address1, port1, address2, port2, address3, port3);
-
-        mw.startMiddlware();
+        MiddlewareImpl middleware = new MiddlewareImpl(portNum, ads1, p1, ads2, p2, ads3, p3);
+        //now start up middleware
+        middleware.initializeMiddleware();
     }
 }

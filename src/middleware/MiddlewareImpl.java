@@ -55,7 +55,7 @@ public class MiddlewareImpl {
         }
     }
 
-
+    //start up middleware
     public void initializeMiddleware() {
         try {
             while (true) {

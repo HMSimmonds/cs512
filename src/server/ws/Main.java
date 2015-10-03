@@ -1,6 +1,9 @@
 package server.ws;
 
 import server.ResourceManagerImpl;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.LifecycleException;
+import java.io.File;
 
 
 public class Main {

@@ -21,12 +21,14 @@ public class TCPPacket implements Serializable {
         returnPacket.room = true;
         returnPacket.customerId = 0;
         returnPacket.isValid = false;
+        returnPacket.bill = "";
 
         return returnPacket;
     }
 
     public int itemPrice;
     public String itemKey;
+    public String bill;
 
     public int customerId;
     public boolean isValid;
@@ -36,7 +38,7 @@ public class TCPPacket implements Serializable {
     public int totalCount;
     public int count;
     public int itemType;    //0 = Car, 1 = Flight, 2 = Room, 3 = Customer, 4 = Itinerary
-    public int actionType;  //0 = GET, 1 = ADD, 2 = DELETE, 3 = RESERVE
+    public int actionType;  //0 = GET, 1 = ADD, 2 = DELETE, 3 = RESERVE,
 
     //return values
     public boolean car;

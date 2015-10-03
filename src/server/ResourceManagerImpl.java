@@ -27,6 +27,7 @@ public class ResourceManagerImpl {
     //connect for server
     private ServerSocket resourceManagerSocket;
 
+    //storage to store customers related to the type specific RM
     private HashMap<String, ReservableItem> storage;
 
     public ResourceManagerImpl(int portNum) {
@@ -158,7 +159,7 @@ public class ResourceManagerImpl {
     Will reserve item within the storage database within the resource manager server
     NOTE: synchronized to prevent multiple access to hashmap.
      */
-    private boolean reserveItem(int id, int customerId, String key, String location) {
+    private synchronized boolean reserveItem(int id, int customerId, String key, String location) {
         boolean canReserve = false;
 
         //First we check if the item is available to reserve

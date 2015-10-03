@@ -1,6 +1,7 @@
 package middleware;
 
 import client.TCPPacket;
+import server.Customer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,6 +11,7 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.ArrayList;
 
 public class MiddlewareImpl {
 
@@ -82,6 +84,10 @@ public class MiddlewareImpl {
         //HELLO - connection trying to be established or redundant command
         if (packet.type == 0) return packet;
         if (packet.itemType == 4) return reserveItinerary(packet);
+        //customer - send packet to all three Rm's
+        if (packet.itemType == 3) {
+            
+        }
 
         //NOT HELLO -> process
         TCPPacket returnPacket = null;
@@ -195,7 +201,6 @@ public class MiddlewareImpl {
                 }
             }
         }
-
         response.isValid = isValidResponse;
         System.out.println("Reserved Itinerary returned " + isValidResponse);
         return response;

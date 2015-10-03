@@ -1,5 +1,7 @@
 package client;
 
+import sun.tools.java.ClassNotFound;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
@@ -100,7 +102,7 @@ public class TCPClient {
 
     //DELETE FLIGHT//
     public boolean deleteFlight(int id, int flightNumber) {
-        boolean returnValue = false;
+        boolean isDeleted = false;
         try {
             TCPPacket request = new TCPPacket();
             request.type = 1;
@@ -113,10 +115,8 @@ public class TCPClient {
 
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
-            returnValue = response.isValid;
+            isDeleted = response.isValid;
 
-            System.out.println("DeleteFlight : id " + id + ": flight number : " + flightNumber +
-                    " Returned : " + returnValue);
 
         } catch (IOException ex) {
             System.out.println(ex);
@@ -125,7 +125,7 @@ public class TCPClient {
         } catch (Exception ex) {
             System.out.println(ex);
         } finally {
-            return returnValue;
+            return isDeleted;
         }
     }
 
@@ -462,26 +462,139 @@ public class TCPClient {
     //------------ROOM OPERATIONS END----------------//
 
     //-----------CUSTOMER OPERATIONS-----------------//
+    /*
+    NOTE: we want all three databases on the RM's to know about the customers
+    Hence, all operations will be sent to the RM's and will be synchronous
+     */
 
+    /*
+    Send the new customer request to the Middleware
+     */
     public int newCustomer(int id) {
-        return 0;
+        int customerId = 0;
+        try {
+            TCPPacket request = new TCPPacket();
+            request.type = 1;
+            request.actionType = 1;
+            request.itemType = 3;
+            //need to create new customerId
+            request.customerId = -1;
+
+            request.id = id;
+            request.itemKey = String.valueOf(id);
+            //send request
+            outputStream.writeObject(request);
+
+            //Now wait for response from middleware server
+            TCPPacket response = (TCPPacket) inputStream.readObject();
+            customerId = response.customerId;
+
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        return customerId;
     }
 
     /* Create a new customer with the provided identifier. */
     public boolean newCustomerId(int id, int customerId) {
-        return true;
+        boolean returnValue = false;
+        try {
+            TCPPacket request = new TCPPacket();
+            request.type = 1;
+            request.actionType = 1;
+            request.itemType = 3;
+
+            request.id = id;
+            //provided customerId
+            request.customerId = customerId;
+            request.itemKey = String.valueOf(id);
+            //send request
+            outputStream.writeObject(request);
+
+            //Now wait for response from middleware server
+            TCPPacket response = (TCPPacket) inputStream.readObject();
+            returnValue = response.isValid;
+
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        } finally {
+            return returnValue;
+        }
     }
 
     /* Remove this customer and all their associated reservations. */
     public boolean deleteCustomer(int id, int customerId) {
-        return true;
+        boolean isDeleted = false;
+        try {
+            TCPPacket request = new TCPPacket();
+            request.type = 1;
+            request.actionType = 2;
+            request.itemType = 3;
+
+            request.id = id;
+            //provided customerId
+            request.customerId = customerId;
+            request.itemKey = String.valueOf(id);
+            //send request
+            outputStream.writeObject(request);
+
+            //Now wait for response from middleware server
+            TCPPacket response = (TCPPacket) inputStream.readObject();
+            isDeleted = response.isValid;
+
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        } finally {
+            return isDeleted;
+        }
     }
 
     /* Return a bill. */
     public String queryCustomerInfo(int id, int customerId) {
+        String bill = "";
+        try {
+            TCPPacket request = new TCPPacket();
+            request.type = 1;
+            request.actionType = 0;
+            request.itemType = 3;
+            request.itemKey = String.valueOf(id);
 
-        return "";
+            request.id = id;
+            request.customerId = customerId;
+
+            //send request
+            outputStream.writeObject(request);
+
+            //Wait for response
+            TCPPacket response = (TCPPacket) inputStream.readObject();
+            bill = response.bill;
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        } finally {
+            return bill;
+        }
     }
+
+    // --------- CUSTOMER OPERATIONS END ----------- //
+
+
+    //----------- RESERVE OPERATIONS-------------//
 
     /* Reserve a seat on this flight. */
     public boolean reserveFlight(int id, int customerId, int flightNumber) {
@@ -603,5 +716,7 @@ public class TCPClient {
             return returnValue;
         }
     }
+
+    //----------- RESERVE OPERATIONS END-------------//
 
 }

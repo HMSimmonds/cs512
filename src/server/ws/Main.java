@@ -11,13 +11,16 @@ public class Main {
     public static void main(String[] args)
             throws Exception {
 
-        if (args.length != 1) {
+        if (args.length != 3) {
             System.out.println(
-                    "Usage: java Main <service-port>");
+                    "Usage: java Main <service-port1> <service-port2> <service-port3>");
             System.exit(-1);
         }
 
-        System.out.println("Creating resource manager with service port : " + Integer.parseInt(args[0]));
-        ResourceManagerImpl resourceManager = new ResourceManagerImpl(Integer.parseInt(args[0]));
+        for (int i = 0; i < 3; i++) {
+            System.out.println("Creating resource manager with service port : " + Integer.parseInt(args[i]));
+            ResourceManagerImpl resourceManager = new ResourceManagerImpl(Integer.parseInt(args[i]));
+        }
+
     }
 }

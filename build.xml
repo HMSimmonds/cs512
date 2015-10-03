@@ -123,6 +123,8 @@
     <target name="run-server">
         <java jar="build/jar/Server.jar" fork="true">
             <arg value="${server1.port}" />
+            <arg value="${server2.port}" />
+            <arg value="${server3.port}" />
         </java>
     </target>
 

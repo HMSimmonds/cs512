@@ -29,9 +29,11 @@ public class ResourceManagerImpl {
 
     //storage to store customers related to the type specific RM
     private HashMap<String, ReservableItem> storage;
+    private HashMap<Integer, Customer> customers;
 
     public ResourceManagerImpl(int portNum) {
         storage = new HashMap<>();
+        customers = new HashMap<>();
 
         try {
             resourceManagerSocket = new ServerSocket(portNum);
@@ -61,31 +63,52 @@ public class ResourceManagerImpl {
         boolean isValidResponse = true;
 
         if (packet.actionType == GET) {
-            ReservableItem itm = getItem(packet.id, packet.itemKey);
-            if (itm == null) {
-                //failed response - invalid
-                isValidResponse = false;
-            }
-            //add into return object
-            else {
-                Object key = itm.getKey();
-                if (key != null) {
-                    returnPacket.itemKey = (String) key;
-                    returnPacket.totalCount = itm.getCount();
-                    returnPacket.count = itm.getReserved();
-                } else {
-                    returnPacket.itemKey = "";
+            //customer query (info & bill)
+            if (packet.itemType == 3) {
+                returnPacket.bill = customers.get(packet.customerId).printBill();
+            } else {
+                ReservableItem itm = getItem(packet.id, packet.itemKey);
+                if (itm == null) {
+                    //failed response - invalid
+                    isValidResponse = false;
+                }
+                //add into return object
+                else {
+                    Object key = itm.getKey();
+                    if (key != null) {
+                        returnPacket.itemKey = (String) key;
+                        returnPacket.totalCount = itm.getCount();
+                        returnPacket.count = itm.getReserved();
+                    } else {
+                        returnPacket.itemKey = "";
+                    }
                 }
             }
-
         } else if (packet.actionType == ADD) {
-            if (addItem(packet.id, new ReservableItem(packet.itemKey, packet.totalCount, packet.itemPrice))) {
+            if (packet.itemType == 3) {
+                Customer customer;
+                if (packet.customerId != -1) {
+                    customer = new Customer(packet.customerId);
+                } else {
+                    customer = new Customer(1000 + (int)Math.random()*20000);
+                }
+                if (addCustomer(packet.id, customer)) {
+                    isValidResponse = true;
+                }
+            }
+            else if (addItem(packet.id, new ReservableItem(packet.itemKey, packet.totalCount, packet.itemPrice))) {
                 //the item exists
                 isValidResponse = true;
             }
 
         } else if (packet.actionType == DELETE) {
-            if (removeItem(packet.id, packet.itemKey)) {
+            if (packet.itemType == 3) {
+                if (deleteCustomer(packet.customerId)) {
+                    isValidResponse = true;
+                }
+            }
+
+            else if (removeItem(packet.id, packet.itemKey)) {
                 //item does not exist
                 isValidResponse = false;
             }
@@ -137,6 +160,28 @@ public class ResourceManagerImpl {
         return doesExist;
     }
 
+    private synchronized boolean addCustomer(int customerId, Customer cust) {
+        boolean doesExist = false;
+
+        if (customers.containsKey(customerId)) {
+            doesExist = true;
+        } else {
+            customers.put(customerId, cust);
+        }
+
+        return doesExist;
+    }
+
+    private synchronized boolean deleteCustomer(int customerId) {
+        boolean isDeleted = false;
+        if (customers.containsKey(customerId)) {
+            customers.remove(customers.get(customerId));
+        }
+
+        return isDeleted;
+    }
+
+
     private void updateStorage(ReservableItem item, String key) {
         ReservableItem existing = storage.get(key);
         existing.setCount(item.getCount() + existing.getCount());
@@ -162,6 +207,16 @@ public class ResourceManagerImpl {
     private synchronized boolean reserveItem(int id, int customerId, String key, String location) {
         boolean canReserve = false;
 
+        Trace.info("RM::reserveItem(" + id + ", " + customerId + ", "
+        + key + ", " + location + ") called.");
+        // Read customer object if it exists (and read lock it).
+        Customer customer = customers.get(customerId);
+        if (customer == null) {
+            Trace.warn("RM::reserveItem(" + id + ", " + customerId + ", "
+                    + key + ", " + location + ") failed: customer doesn't exist.");
+            return false;
+        }
+
         //First we check if the item is available to reserve
         ReservableItem item = getItem(id, key);
 
@@ -175,6 +230,9 @@ public class ResourceManagerImpl {
                         ") INVALID - no stock left");
         } else {
             //we can make reservation
+            customer.reserve(key, location, item.getPrice());
+            customers.put(customerId, customer);
+
             System.out.println("Reserving request item : " + item);
             item.setReserved(item.getReserved() + 1);
             item.setCount(item.getCount() - 1);

@@ -3,8 +3,6 @@ package client;
 import java.io.Serializable;
 import java.util.Vector;
 
-import server.ReservableItem;
-
 /**
  * Created by hmsimmonds on 15-10-02.
  */
@@ -19,8 +17,8 @@ public class TCPPacket implements Serializable {
         returnPacket.itemKey = "";
         returnPacket.totalCount = 0;
         returnPacket.count = 0;
-        returnPacket.hasCar = true;
-        returnPacket.hasRoom = true;
+        returnPacket.car = true;
+        returnPacket.room = true;
         returnPacket.customerId = 0;
         returnPacket.isValid = false;
 
@@ -41,7 +39,7 @@ public class TCPPacket implements Serializable {
     public int actionType;  //0 = GET, 1 = ADD, 2 = DELETE, 3 = RESERVE
 
     //return values
-    public boolean hasCar;
-    public boolean hasRoom;
+    public boolean car;
+    public boolean room;
     public Vector flights;
 }

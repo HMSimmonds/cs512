@@ -7,6 +7,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MiddlewareImpl {
 
@@ -63,7 +66,8 @@ public class MiddlewareImpl {
                 //wait to accept connections
                 Socket socket = middlewareSocket.accept();
 
-                new Thread(new MiddlewareWorker(socket)).run();
+                ExecutorService executor = Executors.newCachedThreadPool();
+                executor.execute(new Thread(new MiddlewareWorker(socket)));
             }
         } catch (IOException ex) {
             System.out.println(ex);
@@ -77,6 +81,7 @@ public class MiddlewareImpl {
 
         //HELLO - connection trying to be established or redundant command
         if (packet.type == 0) return packet;
+        if (packet.itemType == 4) return reserveItinerary(packet);
 
         //NOT HELLO -> process
         TCPPacket returnPacket = null;
@@ -98,7 +103,46 @@ public class MiddlewareImpl {
         }
     }
 
-    //TO DO : reserve Itinerary
+    //reserveItinerary - to forward to all RM's
+    private TCPPacket reserveItinerary(TCPPacket packet) {
+        boolean isValidResponse = false;
+        TCPPacket response = new TCPPacket();
+
+        //If has a car - reserve at location
+        if (packet.car) {
+            TCPPacket carRequest = new TCPPacket();
+//            try {
+//                carRequest.id = packet.id;
+//                carRequest.type = 1;
+//                carRequest.actionType = 3;
+//                carRequest.itemType = 0;
+//                carRequest.itemKey = packet.itemKey;
+//                carRequest.customerId = packet.customerId;
+//                carRequest.totalCount = packet.totalCount;
+//
+//                outputStreams[CAR_INDEX].writeObject(carRequest);
+//
+//                //wait for response
+//
+//
+//            }
+
+            System.out.println("Reserved car for Itinerary");
+        }
+
+        if (packet.room) {
+            System.out.println("Reserved room for Itinerary");
+        }
+
+        if (packet.flights != null) {
+            System.out.println("Reserved flights for Itinerary");
+        }
+
+        response.isValid = isValidResponse;
+        System.out.println("Reserved Iteinerary");
+        return response;
+    }
+
 
 
     public class MiddlewareWorker implements Runnable {

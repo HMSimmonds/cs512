@@ -582,8 +582,8 @@ public class TCPClient {
             request.id = id;
             request.itemKey = location;
             request.customerId = customerId;
-            request.hasRoom = room;
-            request.hasCar = car;
+            request.room = room;
+            request.car = car;
             request.flights = flightNumbers;
 
             //send output request

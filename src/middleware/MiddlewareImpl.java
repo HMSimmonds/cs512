@@ -12,8 +12,8 @@ public class MiddlewareImpl {
 
     private static final int NUM_OF_RESOURCE_MANAGERS = 3;
     private static final int CAR_INDEX = 0;
-    private static final int FLIGHT_INDEX = 0;
-    private static final int ROOM_INDEX = 0;
+    private static final int FLIGHT_INDEX = 1;
+    private static final int ROOM_INDEX = 2;
 
     private static final int HELLO = 0;
 
@@ -58,9 +58,9 @@ public class MiddlewareImpl {
     //start up middleware
     public void initializeMiddleware() {
         try {
+            System.out.println("Starting up middleware server");
             while (true) {
                 //wait to accept connections
-                System.out.println("Starting up middleware server");
                 Socket socket = middlewareSocket.accept();
 
                 new Thread(new MiddlewareWorker(socket)).run();

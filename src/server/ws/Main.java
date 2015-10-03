@@ -4,6 +4,9 @@ import server.ResourceManagerImpl;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.LifecycleException;
 import java.io.File;
+import java.io.Serializable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class Main {
@@ -17,10 +20,11 @@ public class Main {
             System.exit(-1);
         }
 
-        for (int i = 0; i < 3; i++) {
-            System.out.println("Creating resource manager with service port : " + Integer.parseInt(args[i]));
-            ResourceManagerImpl resourceManager = new ResourceManagerImpl(Integer.parseInt(args[i]));
-        }
+        ExecutorService executor = Executors.newCachedThreadPool();
 
+        for (int i = 0; i < 3; i++) {
+            executor.execute(new Thread(new ServerCreator(args[i])));
+        }
     }
 }
+

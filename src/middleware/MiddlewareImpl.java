@@ -59,46 +59,11 @@ public class MiddlewareImpl {
     public void initializeMiddleware() {
         try {
             while (true) {
-                //wait to accept message
+                //wait to accept connections
                 System.out.println("Starting up middleware server");
-                final Socket socket = middlewareSocket.accept();
+                Socket socket = middlewareSocket.accept();
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-                            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-
-                            TCPPacket receipt = new TCPPacket();
-                            receipt.id = 0;
-                            receipt.type = 0;
-                            outputStream.writeObject(receipt);
-
-                            //Now wait to get the response
-                            TCPPacket response = (TCPPacket) inputStream.readObject();
-
-                            //If the response is a connection "HELLO"
-                            if (response.type == HELLO) {
-                                outputStream.writeObject(response);
-                                System.out.println("Connected created with Middleware");
-                            }
-
-
-                            while (true) {
-                                TCPPacket request = (TCPPacket) inputStream.readObject();
-                                //Now process request
-                                TCPPacket processedRequest = processRequest(request);
-                                //write back to client
-                                outputStream.writeObject(processedRequest);
-                            }
-                        } catch (IOException ex) {
-                            System.out.println(ex);
-                        } catch (Exception ex) {
-                            System.out.println(ex);
-                        }
-                    }
-                }).run();
+                new Thread(new MiddlewareWorker(socket)).run();
             }
         } catch (IOException ex) {
             System.out.println(ex);
@@ -130,6 +95,53 @@ public class MiddlewareImpl {
             System.out.println(ex);
         } finally {
             return returnPacket;
+        }
+    }
+
+    //TO DO : reserve Itinerary
+
+
+    public class MiddlewareWorker implements Runnable {
+
+        private Socket socket;
+
+        public MiddlewareWorker(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+
+                TCPPacket receipt = new TCPPacket();
+                receipt.id = 0;
+                receipt.type = 0;
+                outputStream.writeObject(receipt);
+
+                //Now wait to get the response
+                TCPPacket response = (TCPPacket) inputStream.readObject();
+
+                //If the response is a connection "HELLO"
+                if (response.type == HELLO) {
+                    outputStream.writeObject(response);
+                    System.out.println("Connected created with Middleware");
+                }
+
+
+                while (true) {
+                    TCPPacket request = (TCPPacket) inputStream.readObject();
+                    //Now process request
+                    TCPPacket processedRequest = processRequest(request);
+                    //write back to client
+                    outputStream.writeObject(processedRequest);
+                }
+            } catch (IOException ex) {
+                System.out.println(ex);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
         }
     }
 }

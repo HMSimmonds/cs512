@@ -39,32 +39,10 @@ public class ResourceManagerImpl {
 
             while (true) {
                 //this will run while we accept a connection from the middleware
-                final Socket middlewareSocket = resourceManagerSocket.accept();
+                Socket middlewareSocket = resourceManagerSocket.accept();
 
                 //this will then process the connection to the middleware
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ObjectOutputStream outputStream = new ObjectOutputStream(middlewareSocket.getOutputStream());
-                            ObjectInputStream inputStream = new ObjectInputStream(middlewareSocket.getInputStream());
-                            System.out.println("Created connection with middlewareSocket at " + middlewareSocket.getRemoteSocketAddress());
-
-                            while (true) {
-                                TCPPacket input = (TCPPacket) inputStream.readObject();
-                                TCPPacket response = processRequest(input);
-                                outputStream.writeObject(response);
-                            }
-
-                        } catch (IOException ex) {
-                            System.out.println(ex);
-                        } catch (ClassNotFoundException ex) {
-                            System.out.println(ex);
-                        } catch (Exception ex) {
-                            System.out.println(ex);
-                        }
-                    }
-                }).run();
+                new Thread(new ResourceManagerWorker(middlewareSocket)).run();
             }
         } catch (IOException ex) {
             System.out.println(ex);
@@ -205,6 +183,37 @@ public class ResourceManagerImpl {
             System.out.println("Reserved item : " + item);
         }
         return canReserve;
+    }
+
+    public class ResourceManagerWorker implements Runnable {
+
+        private Socket socket;
+
+        public ResourceManagerWorker(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+                System.out.println("Created connection with middlewareSocket at " + socket.getRemoteSocketAddress());
+
+                while (true) {
+                    TCPPacket input = (TCPPacket) inputStream.readObject();
+                    TCPPacket response = processRequest(input);
+                    outputStream.writeObject(response);
+                }
+
+            } catch (IOException ex) {
+                System.out.println(ex);
+            } catch (ClassNotFoundException ex) {
+                System.out.println(ex);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        }
     }
 
 }

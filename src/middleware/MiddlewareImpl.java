@@ -2,6 +2,7 @@ package middleware;
 
 import client.TCPPacket;
 import server.Customer;
+import sun.tools.java.ClassNotFound;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -86,7 +87,26 @@ public class MiddlewareImpl {
         if (packet.itemType == 4) return reserveItinerary(packet);
         //customer - send packet to all three Rm's
         if (packet.itemType == 3) {
-            
+            TCPPacket carPacket = null;
+            TCPPacket roomPacket = null;
+            TCPPacket flightPacket = null;
+            try {
+                outputStreams[CAR_INDEX].writeObject(packet);
+                carPacket = (TCPPacket) inputStreams[CAR_INDEX].readObject();
+
+                outputStreams[ROOM_INDEX].writeObject(packet);
+                roomPacket = (TCPPacket) inputStreams[ROOM_INDEX].readObject();
+
+                outputStreams[FLIGHT_INDEX].writeObject(packet);
+                flightPacket = (TCPPacket) inputStreams[FLIGHT_INDEX].readObject();
+            } catch (IOException ex) {
+                System.out.println(ex);
+            } catch (ClassNotFoundException ex) {
+                System.out.println(ex);
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+            return flightPacket;
         }
 
         //NOT HELLO -> process

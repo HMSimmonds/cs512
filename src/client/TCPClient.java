@@ -485,23 +485,123 @@ public class TCPClient {
 
     /* Reserve a seat on this flight. */
     public boolean reserveFlight(int id, int customerId, int flightNumber) {
-        return true;
+        boolean returnValue = false;
+        try {
+            TCPPacket request = new TCPPacket();
+            request.id = id;
+            request.itemKey = String.valueOf(flightNumber);
+            request.type = 1;
+            request.itemType = 1;
+            request.actionType = 3;
+            request.customerId = customerId;
+
+            //Send request
+            outputStream.writeObject(request);
+
+            //Wait for response
+            TCPPacket response = (TCPPacket) inputStream.readObject();
+            returnValue = response.isValid;
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        } finally {
+            return returnValue;
+        }
     }
 
     /* Reserve a car at this location. */
     public boolean reserveCar(int id, int customerId, String location) {
-        return true;
+        boolean returnValue = false;
+        try {
+            TCPPacket request = new TCPPacket();
+            request.id = id;
+            request.itemKey = location;
+            request.itemType = 0;
+            request.customerId = customerId;
+            request.type = 1;
+            request.actionType = 3;
+
+            //Now send request
+            outputStream.writeObject(request);
+
+            //Now wait for response
+            TCPPacket response = (TCPPacket) inputStream.readObject();
+            returnValue = response.isValid;
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        } finally {
+            return returnValue;
+        }
     }
 
     /* Reserve a room at this location. */
     public boolean reserveRoom(int id, int customerId, String location) {
-        return true;
+        boolean returnValue = false;
+        try {
+            TCPPacket request = new TCPPacket();
+            request.type = 1;
+            request.itemKey = location;
+            request.itemType = 2;
+            request.actionType = 3;
+            request.customerId = customerId;
+            request.id = id;
+
+            //send packet
+            outputStream.writeObject(request);
+
+            //Now wait for response
+            TCPPacket response = (TCPPacket) inputStream.readObject();
+            returnValue = response.isValid;
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        } finally {
+            return returnValue;
+        }
     }
 
     /* Reserve an itinerary. */
     public boolean reserveItinerary(int id, int customerId, Vector<Integer> flightNumbers,
                                     String location, boolean car, boolean room) {
-        return true;
+        boolean returnValue = false;
+        try {
+            TCPPacket request = new TCPPacket();
+            request.type = 1;
+            request.actionType = 3;
+            request.itemType = 4;
+            request.id = id;
+            request.itemKey = location;
+            request.customerId = customerId;
+            request.hasRoom = room;
+            request.hasCar = car;
+            request.flights = flightNumbers;
+
+            //send output request
+            outputStream.writeObject(request);
+
+            //Now wait for response
+            TCPPacket response = (TCPPacket) inputStream.readObject();
+            returnValue = response.isValid;
+
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        } finally {
+            return returnValue;
+        }
     }
 
 }

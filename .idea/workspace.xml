@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="26660b68-9a3e-4c71-ba8e-345e5b883630" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/middleware/MiddlewareImpl.java" afterPath="$PROJECT_DIR$/src/middleware/MiddlewareImpl.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/client/TCPClient.java" afterPath="$PROJECT_DIR$/src/client/TCPClient.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/client/TCPPacket.java" afterPath="$PROJECT_DIR$/src/client/TCPPacket.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="cs512.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -44,8 +41,8 @@
       <file leaf-file-name="TCPClient.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/client/TCPClient.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.69666183">
-              <caret line="52" column="30" selection-start-line="52" selection-start-column="30" selection-end-line="52" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.67343974">
+              <caret line="511" column="9" selection-start-line="511" selection-start-column="9" selection-end-line="511" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -188,8 +185,8 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="483" />
-    <option name="y" value="34" />
+    <option name="x" value="497" />
+    <option name="y" value="23" />
     <option name="width" value="929" />
     <option name="height" value="786" />
   </component>
@@ -557,7 +554,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="483" y="34" width="929" height="786" extended-state="0" />
+    <frame x="497" y="23" width="929" height="786" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -806,8 +803,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/client/TCPClient.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.69666183">
-          <caret line="52" column="30" selection-start-line="52" selection-start-column="30" selection-end-line="52" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.67343974">
+          <caret line="511" column="9" selection-start-line="511" selection-start-column="9" selection-end-line="511" selection-end-column="9" />
           <folding />
         </state>
       </provider>

@@ -86,13 +86,7 @@ public class ResourceManagerImpl {
             }
         } else if (packet.actionType == ADD) {
             if (packet.itemType == 3) {
-                Customer customer;
-                if (packet.customerId != -1) {
-                    customer = new Customer(packet.customerId);
-                } else {
-                    customer = new Customer(1000 + (int)Math.random()*20000);
-                }
-                if (addCustomer(packet.customerId, customer)) {
+                if (addCustomer(packet.customerId, new Customer(packet.customerId))) {
                     isValidResponse = true;
                 }
             }
@@ -258,7 +252,7 @@ public class ResourceManagerImpl {
             item.setCount(item.getCount() - 1);
             canReserve = true;
 
-            Trace.warn("RM::reserveItem(" + id + ", " + customerId + ", " + key + ", " + location + ") VALID.");
+            Trace.info("RM::reserveItem(" + id + ", " + customerId + ", " + key + ", " + location + ") VALID.");
             System.out.println("Reserved item : " + item);
         }
         return canReserve;

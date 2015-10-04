@@ -93,8 +93,17 @@ public class MiddlewareImpl {
         if (packet.itemType == 4) return reserveItinerary(packet);
         //customer - send packet to all three Rm's
         if (packet.itemType == 3) {
+            int customerId;
+            if (packet.customerId == -1) {
+                customerId = 1000 + (int)Math.random()*20000;
+            } else {
+                customerId = packet.customerId;
+            }
+            packet.customerId = customerId;
+
             TCPPacket carPacket, roomPacket, flightPacket = null;
             try {
+                System.out.println("Waiting for response from resource managers");
                 outputStreams[CAR_INDEX].writeObject(packet);
                 carPacket = (TCPPacket) inputStreams[CAR_INDEX].readObject();
 
@@ -103,10 +112,11 @@ public class MiddlewareImpl {
 
                 outputStreams[FLIGHT_INDEX].writeObject(packet);
                 flightPacket = (TCPPacket) inputStreams[FLIGHT_INDEX].readObject();
+                System.out.println("Received response back from resource managers");
 
                 //process bill in case of query for customer info (bill)
-                flightPacket.bill = carPacket.bill + " " +
-                                    roomPacket.bill + " " + flightPacket.bill + "\n";
+                flightPacket.bill = "Car Bill: " + carPacket.bill + "\n" + "Room Bill: " +
+                                    roomPacket.bill + "\n" + "Flight Bill: " + flightPacket.bill + "\n";
 
             } catch (IOException ex) {
                 System.out.println(ex);

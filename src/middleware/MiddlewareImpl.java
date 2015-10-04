@@ -87,9 +87,7 @@ public class MiddlewareImpl {
         if (packet.itemType == 4) return reserveItinerary(packet);
         //customer - send packet to all three Rm's
         if (packet.itemType == 3) {
-            TCPPacket carPacket = null;
-            TCPPacket roomPacket = null;
-            TCPPacket flightPacket = null;
+            TCPPacket carPacket, roomPacket, flightPacket = null;
             try {
                 outputStreams[CAR_INDEX].writeObject(packet);
                 carPacket = (TCPPacket) inputStreams[CAR_INDEX].readObject();
@@ -99,6 +97,9 @@ public class MiddlewareImpl {
 
                 outputStreams[FLIGHT_INDEX].writeObject(packet);
                 flightPacket = (TCPPacket) inputStreams[FLIGHT_INDEX].readObject();
+
+                //process bill in case of query for customer info (bill)
+                flightPacket.bill = carPacket.bill + roomPacket.bill + flightPacket.bill;
             } catch (IOException ex) {
                 System.out.println(ex);
             } catch (ClassNotFoundException ex) {

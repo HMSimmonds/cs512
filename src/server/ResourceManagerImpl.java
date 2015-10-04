@@ -92,7 +92,7 @@ public class ResourceManagerImpl {
                 } else {
                     customer = new Customer(1000 + (int)Math.random()*20000);
                 }
-                if (addCustomer(packet.id, customer)) {
+                if (addCustomer(packet.customerId, customer)) {
                     isValidResponse = true;
                 }
             }
@@ -175,12 +175,33 @@ public class ResourceManagerImpl {
     private synchronized boolean deleteCustomer(int customerId) {
         boolean isDeleted = false;
         if (customers.containsKey(customerId)) {
-            customers.remove(customers.get(customerId));
-        }
+            Customer customer = customers.get(customerId);
 
+            //now remove all reservations
+            RMHashtable reservations = customer.getReservations();
+            if (reservations == null) {
+                System.out.println("Error deleting customer reservations");
+            }
+
+            //put all reservations back into storage as available
+            Iterator it = reservations.entrySet().iterator();
+            while (it.hasNext()) {
+                ReservedItem item = (ReservedItem) it;
+                updateStorage(item, item.getKey());
+            }
+            //now remove all entires
+            reservations.clear();
+
+            customers.remove(customer);
+            isDeleted = true;
+        }
         return isDeleted;
     }
 
+    private void updateStorage(ReservedItem item, String key) {
+        ReservableItem reservableItem = new ReservableItem(item.getLocation(), item.getCount(), item.getPrice());
+        updateStorage(reservableItem, key);
+    }
 
     private void updateStorage(ReservableItem item, String key) {
         ReservableItem existing = storage.get(key);

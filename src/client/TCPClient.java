@@ -1,7 +1,5 @@
 package client;
 
-import sun.tools.java.ClassNotFound;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
@@ -16,6 +14,29 @@ import java.util.Vector;
  *
  */
 public class TCPClient {
+
+    //indices to send packet with appropriate fields
+
+    //ITEM TYPES
+    private static final int CAR_ITEM_TYPE = 0;
+    private static final int FLIGHT_ITEM_TYPE = 1;
+    private static final int ROOM_ITEM_TYPE = 2;
+    private static final int CUSTOMER_ITEM_TYPE = 3;
+    private static final int ITINERARY_ITEM_TYPE = 4;
+
+    //ACTION TYPES
+    private static final int GET_ACTION_TYPE = 0;
+    private static final int ADD_ACTION_TYPE = 1;
+    private static final int DELETE_ACTION_TYPE = 2;
+    private static final int RESERVE_ACTION_TYPE = 3;
+
+    //PACKET TYPES
+    private static final int RECEIPT = 0;
+    private static final int MESSAGE = 1;
+
+    //CUSTOMER PARAMS
+    private static final int NO_CUSTOMER_ID = -1;
+
 
     //create streams to receive input and output
     private ObjectOutputStream outputStream;
@@ -73,9 +94,9 @@ public class TCPClient {
         boolean returnValue = false;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 1;
-            request.itemType = 1;
+            request.type = MESSAGE;
+            request.actionType = ADD_ACTION_TYPE;
+            request.itemType = FLIGHT_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(flightNumber);
@@ -105,9 +126,9 @@ public class TCPClient {
         boolean isDeleted = false;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 2;
-            request.itemType = 1;
+            request.type = MESSAGE;
+            request.actionType = DELETE_ACTION_TYPE;
+            request.itemType = FLIGHT_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(flightNumber);
@@ -134,9 +155,9 @@ public class TCPClient {
         int returnValue = 0;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 0;
-            request.itemType = 1;
+            request.type = MESSAGE;
+            request.actionType = GET_ACTION_TYPE;
+            request.itemType = FLIGHT_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(flightNumber);
@@ -166,9 +187,9 @@ public class TCPClient {
         int returnPrice = 0;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 0;
-            request.itemType = 1;
+            request.type = MESSAGE;
+            request.actionType = GET_ACTION_TYPE;
+            request.itemType = FLIGHT_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(flightNumber);
@@ -203,9 +224,9 @@ public class TCPClient {
 
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 1;
-            request.itemType = 0;
+            request.type = MESSAGE;
+            request.actionType = ADD_ACTION_TYPE;
+            request.itemType = CAR_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(location);
@@ -235,9 +256,9 @@ public class TCPClient {
         boolean returnValue = false;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 2;
-            request.itemType = 0;
+            request.type = MESSAGE;
+            request.actionType = DELETE_ACTION_TYPE;
+            request.itemType = CAR_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(location);
@@ -266,9 +287,9 @@ public class TCPClient {
         int returnValue = 0;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 0;
-            request.itemType = 0;
+            request.type = MESSAGE;
+            request.actionType = GET_ACTION_TYPE;
+            request.itemType = CAR_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(location);
@@ -298,9 +319,9 @@ public class TCPClient {
         int returnPrice = 0;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 0;
-            request.itemType = 0;
+            request.type = MESSAGE;
+            request.actionType = GET_ACTION_TYPE;
+            request.itemType = CAR_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(location);
@@ -336,9 +357,9 @@ public class TCPClient {
 
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 1;
-            request.itemType = 2;
+            request.type = MESSAGE;
+            request.actionType = ADD_ACTION_TYPE;
+            request.itemType = ROOM_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(location);
@@ -369,9 +390,9 @@ public class TCPClient {
         boolean returnValue = false;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 2;
-            request.itemType = 2;
+            request.type = MESSAGE;
+            request.actionType = DELETE_ACTION_TYPE;
+            request.itemType = ROOM_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(location);
@@ -400,9 +421,9 @@ public class TCPClient {
         int returnValue = 0;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 0;
-            request.itemType = 2;
+            request.type = MESSAGE;
+            request.actionType = GET_ACTION_TYPE;
+            request.itemType = ROOM_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(location);
@@ -432,9 +453,9 @@ public class TCPClient {
         int returnPrice = 0;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 0;
-            request.itemType = 2;
+            request.type = MESSAGE;
+            request.actionType = GET_ACTION_TYPE;
+            request.itemType = ROOM_ITEM_TYPE;
 
             request.id = id;
             request.itemKey = String.valueOf(location);
@@ -474,14 +495,16 @@ public class TCPClient {
         int customerId = 0;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 1;
-            request.itemType = 3;
+            request.type = MESSAGE;
+            request.actionType = ADD_ACTION_TYPE;
+            request.itemType = CUSTOMER_ITEM_TYPE;
+
             //need to create new customerId
-            request.customerId = -1;
+            request.customerId = NO_CUSTOMER_ID;
 
             request.id = id;
             request.itemKey = String.valueOf(id);
+
             //send request
             outputStream.writeObject(request);
 
@@ -504,9 +527,9 @@ public class TCPClient {
         boolean returnValue = false;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 1;
-            request.itemType = 3;
+            request.type = MESSAGE;
+            request.actionType = ADD_ACTION_TYPE;
+            request.itemType = CUSTOMER_ITEM_TYPE;
 
             request.id = id;
             //provided customerId
@@ -535,9 +558,9 @@ public class TCPClient {
         boolean isDeleted = false;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 2;
-            request.itemType = 3;
+            request.type = MESSAGE;
+            request.actionType = DELETE_ACTION_TYPE;
+            request.itemType = CUSTOMER_ITEM_TYPE;
 
             request.id = id;
             //provided customerId
@@ -566,9 +589,9 @@ public class TCPClient {
         String bill = "";
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 0;
-            request.itemType = 3;
+            request.type = MESSAGE;
+            request.actionType = GET_ACTION_TYPE;
+            request.itemType = CUSTOMER_ITEM_TYPE;
             request.itemKey = String.valueOf(id);
 
             request.id = id;
@@ -603,9 +626,9 @@ public class TCPClient {
             TCPPacket request = new TCPPacket();
             request.id = id;
             request.itemKey = String.valueOf(flightNumber);
-            request.type = 1;
-            request.itemType = 1;
-            request.actionType = 3;
+            request.type = MESSAGE;
+            request.itemType = FLIGHT_ITEM_TYPE;
+            request.actionType = RESERVE_ACTION_TYPE;
             request.customerId = customerId;
 
             //Send request
@@ -632,10 +655,10 @@ public class TCPClient {
             TCPPacket request = new TCPPacket();
             request.id = id;
             request.itemKey = location;
-            request.itemType = 0;
+            request.itemType = CAR_ITEM_TYPE;
             request.customerId = customerId;
-            request.type = 1;
-            request.actionType = 3;
+            request.type = MESSAGE;
+            request.actionType = RESERVE_ACTION_TYPE;
 
             //Now send request
             outputStream.writeObject(request);
@@ -659,10 +682,10 @@ public class TCPClient {
         boolean returnValue = false;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
+            request.type = MESSAGE;
             request.itemKey = location;
-            request.itemType = 2;
-            request.actionType = 3;
+            request.itemType = ROOM_ITEM_TYPE;
+            request.actionType = RESERVE_ACTION_TYPE;
             request.customerId = customerId;
             request.id = id;
 
@@ -689,9 +712,9 @@ public class TCPClient {
         boolean returnValue = false;
         try {
             TCPPacket request = new TCPPacket();
-            request.type = 1;
-            request.actionType = 3;
-            request.itemType = 4;
+            request.type = MESSAGE;
+            request.actionType = RESERVE_ACTION_TYPE;
+            request.itemType = ITINERARY_ITEM_TYPE;
             request.id = id;
             request.itemKey = location;
             request.customerId = customerId;

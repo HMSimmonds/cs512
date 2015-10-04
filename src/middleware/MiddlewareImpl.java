@@ -12,7 +12,6 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.ArrayList;
 
 public class MiddlewareImpl {
 
@@ -22,6 +21,13 @@ public class MiddlewareImpl {
     private static final int ROOM_INDEX = 2;
 
     private static final int HELLO = 0;
+    private static final int MESSAGE = 1;
+
+    //ACTION TYPES
+    private static final int GET_ACTION_TYPE = 0;
+    private static final int ADD_ACTION_TYPE = 1;
+    private static final int DELETE_ACTION_TYPE = 2;
+    private static final int RESERVE_ACTION_TYPE = 3;
 
     private Socket[] resourceManagerSockets = new Socket[3];
     private ServerSocket middlewareSocket;
@@ -99,7 +105,9 @@ public class MiddlewareImpl {
                 flightPacket = (TCPPacket) inputStreams[FLIGHT_INDEX].readObject();
 
                 //process bill in case of query for customer info (bill)
-                flightPacket.bill = carPacket.bill + roomPacket.bill + flightPacket.bill;
+                flightPacket.bill = carPacket.bill + " " +
+                                    roomPacket.bill + " " + flightPacket.bill + "\n";
+
             } catch (IOException ex) {
                 System.out.println(ex);
             } catch (ClassNotFoundException ex) {
@@ -140,9 +148,9 @@ public class MiddlewareImpl {
             TCPPacket carRequest = new TCPPacket();
             try {
                 carRequest.id = packet.id;
-                carRequest.type = 1;
-                carRequest.actionType = 3;
-                carRequest.itemType = 0;
+                carRequest.type = MESSAGE;
+                carRequest.actionType = RESERVE_ACTION_TYPE;
+                carRequest.itemType = CAR_INDEX;
                 carRequest.itemKey = packet.itemKey;
                 carRequest.customerId = packet.customerId;
                 carRequest.totalCount = packet.totalCount;
@@ -168,11 +176,11 @@ public class MiddlewareImpl {
             try {
                 roomRequest.id = packet.id;
                 roomRequest.itemKey = packet.itemKey;
-                roomRequest.type = 1;
-                roomRequest.actionType = 3;
+                roomRequest.type = MESSAGE;
+                roomRequest.actionType = RESERVE_ACTION_TYPE;
                 roomRequest.totalCount = 1;
                 roomRequest.customerId = packet.customerId;
-                roomRequest.itemType = 2;
+                roomRequest.itemType = ROOM_INDEX;
 
                 //Send room request
                 outputStreams[ROOM_INDEX].writeObject(roomRequest);
@@ -197,10 +205,10 @@ public class MiddlewareImpl {
                 TCPPacket flightRequest = new TCPPacket();
                 try {
                     flightRequest.id = packet.id;
-                    flightRequest.type = 1;
+                    flightRequest.type = MESSAGE;
                     flightRequest.itemKey = (String)it.next();
-                    flightRequest.itemType = 1;
-                    flightRequest.actionType = 3;
+                    flightRequest.itemType = FLIGHT_INDEX;
+                    flightRequest.actionType = RESERVE_ACTION_TYPE;
                     flightRequest.customerId = packet.customerId;
 
                     //send flights request
@@ -245,7 +253,7 @@ public class MiddlewareImpl {
 
                 TCPPacket receipt = new TCPPacket();
                 receipt.id = 0;
-                receipt.type = 0;
+                receipt.type = HELLO;
                 outputStream.writeObject(receipt);
 
                 //Now wait to get the response

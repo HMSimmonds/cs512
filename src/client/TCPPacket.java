@@ -8,6 +8,22 @@ import java.util.Vector;
  */
 public class TCPPacket implements Serializable {
 
+    //default constructor
+    public TCPPacket() {
+        id = 0;
+        type = 0;
+        itemType = 0;
+        actionType = 0;
+        itemKey = "";
+        totalCount = 0;
+        count = 0;
+        car = false;
+        room = false;
+        customerId = 0;
+        isValid = false;
+        bill = "";
+    }
+
     public static TCPPacket makeBlankPacket() {
         TCPPacket returnPacket = new TCPPacket();
         returnPacket.id = 0;

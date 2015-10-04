@@ -1,5 +1,7 @@
 package client;
 
+import sun.jvm.hotspot.HelloWorld;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
@@ -56,30 +58,29 @@ public class TCPClient {
             inputStream = new ObjectInputStream(tcpSocket.getInputStream());
 
             while (true) {
-                //loop while waiting to read input objects
+                //loop while waiting to read input connection objects with socket
+                //once we have formed a handshake with the middleware, we can make requests
                 TCPPacket inputPacket = (TCPPacket) inputStream.readObject();
 
                 //if the response is a receiptResponse for connection
-                if (inputPacket.type == 0) {
+                if (inputPacket.type == RECEIPT) {
 
                     //this is the first receipt for connection
                     if (numOfReceipts < 1) {
                         //Respond to connection with "HELLO" Message
                         TCPPacket responsePacket = new TCPPacket();
                         //assign it to a receipt Type
-                        responsePacket.type = 0;
+                        responsePacket.type = RECEIPT;
                         outputStream.writeObject(responsePacket);
                         ++numOfReceipts;
                     } else {
                         System.out.println("Connection created with Middleware");
-                        //no longer waiting for connection;
+                        //no longer waiting for connection
+                        //the response is a message Response
                         break;
                     }
-                    //the response is a message Response
                 }
             }
-
-
         } catch (IOException ex) {
             System.out.println(ex);
         } catch (Exception ex) {
@@ -138,7 +139,6 @@ public class TCPClient {
             TCPPacket response = (TCPPacket) inputStream.readObject();
             isDeleted = response.isValid;
 
-
         } catch (IOException ex) {
             System.out.println(ex);
         } catch (ClassNotFoundException ex) {
@@ -165,7 +165,6 @@ public class TCPClient {
 
             //Now wait for response from middleware server
             TCPPacket response = (TCPPacket) inputStream.readObject();
-
             returnValue = response.totalCount - response.count;
 
             System.out.println("QueryFlight for id: " + id + " Flight Number: " + flightNumber
@@ -534,7 +533,7 @@ public class TCPClient {
             request.id = id;
             //provided customerId
             request.customerId = customerId;
-            request.itemKey = String.valueOf(id);
+            request.itemKey = String.valueOf(customerId);
             //send request
             outputStream.writeObject(request);
 
@@ -565,7 +564,7 @@ public class TCPClient {
             request.id = id;
             //provided customerId
             request.customerId = customerId;
-            request.itemKey = String.valueOf(id);
+            request.itemKey = String.valueOf(customerId);
             //send request
             outputStream.writeObject(request);
 
@@ -592,7 +591,7 @@ public class TCPClient {
             request.type = MESSAGE;
             request.actionType = GET_ACTION_TYPE;
             request.itemType = CUSTOMER_ITEM_TYPE;
-            request.itemKey = String.valueOf(id);
+            request.itemKey = String.valueOf(customerId);
 
             request.id = id;
             request.customerId = customerId;

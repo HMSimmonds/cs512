@@ -168,7 +168,6 @@ public class ResourceManagerImpl {
         } else {
             customers.put(customerId, cust);
         }
-
         return doesExist;
     }
 
@@ -181,16 +180,16 @@ public class ResourceManagerImpl {
             RMHashtable reservations = customer.getReservations();
             if (reservations == null) {
                 System.out.println("Error deleting customer reservations");
+            } else {
+                //put all reservations back into storage as available
+                Iterator it = reservations.entrySet().iterator();
+                while (it.hasNext()) {
+                    ReservedItem item = (ReservedItem) it;
+                    updateStorage(item, item.getKey());
+                }
+                //now remove all entires
+                reservations.clear();
             }
-
-            //put all reservations back into storage as available
-            Iterator it = reservations.entrySet().iterator();
-            while (it.hasNext()) {
-                ReservedItem item = (ReservedItem) it;
-                updateStorage(item, item.getKey());
-            }
-            //now remove all entires
-            reservations.clear();
 
             customers.remove(customer);
             isDeleted = true;

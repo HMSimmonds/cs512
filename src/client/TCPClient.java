@@ -1,7 +1,5 @@
 package client;
 
-import sun.jvm.hotspot.HelloWorld;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;

@@ -89,6 +89,7 @@ public class ResourceManagerImpl {
                 if (addCustomer(packet.customerId, new Customer(packet.customerId))) {
                     isValidResponse = true;
                 }
+                returnPacket.customerId = packet.customerId;
             }
             else if (addItem(packet.id, new ReservableItem(packet.itemKey, packet.totalCount, packet.itemPrice))) {
                 //the item exists

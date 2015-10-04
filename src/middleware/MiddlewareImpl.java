@@ -1,15 +1,14 @@
 package middleware;
 
 import client.TCPPacket;
-import server.Customer;
-import sun.tools.java.ClassNotFound;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,6 +30,9 @@ public class MiddlewareImpl {
 
     private Socket[] resourceManagerSockets = new Socket[3];
     private ServerSocket middlewareSocket;
+
+    //list of customer Id's that have been created so far
+    private ArrayList<Integer> customerIds = new ArrayList<>();
 
     private ObjectOutputStream[] outputStreams = new ObjectOutputStream[3];
     private ObjectInputStream[] inputStreams = new ObjectInputStream[3];
@@ -93,13 +95,19 @@ public class MiddlewareImpl {
         if (packet.itemType == 4) return reserveItinerary(packet);
         //customer - send packet to all three Rm's
         if (packet.itemType == 3) {
-            int customerId;
             if (packet.customerId == -1) {
-                customerId = 1000 + (int)Math.random()*20000;
-            } else {
-                customerId = packet.customerId;
+                int random;
+                while (true) {
+                    Random rand = new Random();
+                    random = rand.nextInt(20000) + 1;
+                    if (!customerIds.contains(random)) {
+                        break;
+                    }
+                }
+                packet.customerId = random;
             }
-            packet.customerId = customerId;
+
+            customerIds.add(packet.customerId);
 
             TCPPacket carPacket, roomPacket, flightPacket = null;
             try {

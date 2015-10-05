@@ -85,6 +85,7 @@ public class ResourceManagerImpl {
                         returnPacket.itemKey = (String) key;
                         returnPacket.totalCount = itm.getCount();
                         returnPacket.count = itm.getReserved();
+                        returnPacket.itemPrice = itm.getPrice();
                     } else {
                         returnPacket.itemKey = "";
                     }

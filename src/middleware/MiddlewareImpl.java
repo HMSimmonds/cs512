@@ -122,9 +122,12 @@ public class MiddlewareImpl {
                 flightPacket = (TCPPacket) inputStreams[FLIGHT_INDEX].readObject();
                 System.out.println("Received response back from resource managers");
 
-                //process bill in case of query for customer info (bill)
-                flightPacket.bill = "Car Bill: " + carPacket.bill + "\n" + "Room Bill: " +
-                                    roomPacket.bill + "\n" + "Flight Bill: " + flightPacket.bill + "\n";
+                if ((!carPacket.bill.equals("") || !roomPacket.bill.equals("") || !flightPacket.bill.equals(""))) {
+                    //process bill in case of query for customer info (bill)
+                    flightPacket.bill = "Car Bill: " + carPacket.bill + "\n" + "Room Bill: " +
+                            roomPacket.bill + "\n" + "Flight Bill: " + flightPacket.bill + "\n";
+
+                }
 
             } catch (IOException ex) {
                 System.out.println(ex);

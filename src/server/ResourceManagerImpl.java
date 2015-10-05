@@ -65,7 +65,13 @@ public class ResourceManagerImpl {
         if (packet.actionType == GET) {
             //customer query (info & bill)
             if (packet.itemType == 3) {
-                returnPacket.bill = customers.get(packet.customerId).printBill();
+                if (customers.get(packet.customerId) == null) {
+                    System.out.println("Customer has been deleted");
+                    isValidResponse = false;
+                } else {
+                    returnPacket.bill = customers.get(packet.customerId).printBill();
+                    isValidResponse = true;
+                }
             } else {
                 ReservableItem itm = getItem(packet.id, packet.itemKey);
                 if (itm == null) {
@@ -93,6 +99,7 @@ public class ResourceManagerImpl {
             }
             else if (addItem(packet.id, new ReservableItem(packet.itemKey, packet.totalCount, packet.itemPrice))) {
                 //the item exists
+                System.out.println(packet.totalCount);
                 isValidResponse = true;
             }
 
@@ -141,7 +148,7 @@ public class ResourceManagerImpl {
      */
     private synchronized  boolean addItem(int id, ReservableItem item) {
         boolean doesExist = false;
-        String key = item.getKey();
+        String key = item.getKey().toLowerCase();
         System.out.println("Adding item for id : " + id + " and item key : " + key);
 
         //If the item already exists in the database we must perform an update
@@ -177,17 +184,22 @@ public class ResourceManagerImpl {
                 System.out.println("Error deleting customer reservations");
             } else {
                 //put all reservations back into storage as available
-                Iterator it = reservations.entrySet().iterator();
-                while (it.hasNext()) {
-                    ReservedItem item = (ReservedItem) it;
+                for (Object obj : reservations.values()) {
+                    ReservedItem item = (ReservedItem) obj;
                     updateStorage(item, item.getKey());
                 }
+
                 //now remove all entires
                 reservations.clear();
             }
 
-            customers.remove(customer);
+            if (customers.remove(customerId) == null) {
+                System.out.println("Customer could not be removed");
+            }
             isDeleted = true;
+        }
+        else {
+            System.out.println("Customer does not exist");
         }
         return isDeleted;
     }
@@ -199,6 +211,11 @@ public class ResourceManagerImpl {
 
     private void updateStorage(ReservableItem item, String key) {
         ReservableItem existing = storage.get(key);
+
+        if (existing == null) {
+            System.out.println("Error updating storage, item does not exist in database");
+            return;
+        }
         existing.setCount(item.getCount() + existing.getCount());
         if (item.getPrice() > 0) {
             existing.setPrice(item.getPrice());
@@ -250,7 +267,6 @@ public class ResourceManagerImpl {
 
             System.out.println("Reserving request item : " + item);
             item.setReserved(item.getReserved() + 1);
-            item.setCount(item.getCount() - 1);
             canReserve = true;
 
             Trace.info("RM::reserveItem(" + id + ", " + customerId + ", " + key + ", " + location + ") VALID.");

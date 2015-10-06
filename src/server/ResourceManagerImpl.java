@@ -205,12 +205,12 @@ public class ResourceManagerImpl {
         return isDeleted;
     }
 
-    private void updateStorage(ReservedItem item, String key) {
+    private synchronized void updateStorage(ReservedItem item, String key) {
         ReservableItem reservableItem = new ReservableItem(item.getLocation(), item.getCount(), item.getPrice());
         updateStorage(reservableItem, key);
     }
 
-    private void updateStorage(ReservableItem item, String key) {
+    private synchronized void updateStorage(ReservableItem item, String key) {
         ReservableItem existing = storage.get(key);
 
         if (existing == null) {
